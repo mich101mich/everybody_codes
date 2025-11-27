@@ -1,15 +1,20 @@
+#![allow(unused_imports)]
+
 #[macro_use]
 mod utils;
-#[allow(unused)]
 use utils::*;
 
 mod current;
 mod parts {
     #![allow(unused)]
+    pub use super::*;
 
     pub mod part_2024_01_1;
     pub mod part_2024_01_2;
     pub mod part_2024_01_3;
+    pub mod part_2024_02_1;
+    pub mod part_2024_02_2;
+    pub mod part_2024_02_3;
     // <INSERTION_POINT>
 }
 
