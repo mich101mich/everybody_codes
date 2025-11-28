@@ -5,7 +5,10 @@ pub fn run() {
     let input = include_str!("../input/current.txt");
     // let input = "";
 
-    let result = input
+    let parsed = input
+        ;
+
+    let result = parsed
         ;
 
     result!(result);

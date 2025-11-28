@@ -1,26 +1,40 @@
 #!/bin/bash -e
 
-if [[ ! $1 ]]; then
-    echo "Usage: $0 <part-name>"
+cd "$(dirname "$0")"
+
+part=$(command ls -1 src/parts/part_*.rs | sort | tail -n 1)
+part="${part#src/parts/part_}"
+part="${part%.rs}"
+
+max_input=$(command ls -1 input/[0-9]*.txt | sort | tail -n 1)
+max_input="${max_input#input/}"
+max_input="${max_input%.txt}"
+max_input="${max_input//-/_}"
+if [[ "$part" != "$max_input" ]]; then
+    echo "Input-part mismatch: '${max_input}' vs '${part}'"
     exit 1
 fi
 
-arg_dash="${1//_/-}"
-arg_ident="${1//-/_}"
+IFS='_' read -r year day step <<<"$part"
 
-if [[ ! $arg_dash =~ ^[0-9]{4}-[0-9]{2}-[1-3]$ ]]; then
-    echo "Invalid argument, expected YYYY-DD-P"
-    exit 1
+if [[ $step != "3" ]]; then
+    step=$((step + 1))
+else
+    step=1
+    if [[ $day != "20" ]]; then
+        day="${day#0}" # strip leading 0, as it would cause octal parsing
+        day=$((day + 1))
+        day=$(printf "%02d" "$day")
+    else
+        day="01"
+        year=$((year + 1))
+    fi
 fi
+echo "year='$year' day='$day' step='$step'"
 
-input_file="input/${arg_dash}.txt"
-part="part_${arg_ident}"
+input_file="input/${year}-${day}-${step}.txt"
+part="part_${year}_${day}_${step}"
 part_file="src/parts/${part}.rs"
-
-if [[ -f "$input_file" || -f "$part_file" ]]; then
-    echo "Part already exists!"
-    exit 1
-fi
 
 cp src/current.rs "$part_file"
 cp input/current.txt "$input_file"
@@ -30,7 +44,7 @@ sed -i -e "s|// <INSERTION_POINT>|pub mod ${part};\n    // <INSERTION_POINT>|" s
 
 echo -n "" > input/current.txt
 
-if [[ "$1" == *3 ]]; then
+if [[ "$step" == "3" ]]; then
     cat > src/current.rs <<EOF
 use super::*;
 
@@ -39,7 +53,10 @@ pub fn run() {
     let input = include_str!("../input/current.txt");
     // let input = "";
 
-    let result = input
+    let parsed = input
+        ;
+
+    let result = parsed
         ;
 
     result!(result);
@@ -47,5 +64,6 @@ pub fn run() {
 EOF
 
     git add .
-    git commit -m "Added Part ${arg_dash%-*}"
+    git commit -m "Added Part ${year}-${day}"
+    git push
 fi
