@@ -15,6 +15,9 @@ mod parts {
     pub mod part_2024_02_1;
     pub mod part_2024_02_2;
     pub mod part_2024_02_3;
+    pub mod part_2024_03_1;
+    pub mod part_2024_03_2;
+    pub mod part_2024_03_3;
     // <INSERTION_POINT>
 }
 
