@@ -21,7 +21,7 @@ pub fn run() {
     lines.next().unwrap(); // empty line
 
     let grid = Grid::from(lines.map(byte_line).to_vec());
-    let (w, h) = (grid.w(), grid.h());
+    let (w, h) = grid.size();
 
     let mut is_runic = grid.map(|_| false);
 
